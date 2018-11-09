@@ -12,6 +12,7 @@ import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -55,7 +56,7 @@ import java.util.List;
 public class TalkFragment extends Fragment implements View.OnClickListener,EMMessageListener{
     private ImageView addTel;//添加好友按钮
     private telPeople telman;//联系人
-
+    SwipeRefreshLayout swipeRefreshLayout;//刷新
     private List<telPeople> telPeopleList=new ArrayList<>();
     private RecyclerView recyclerView;
     private ImageView message;
@@ -140,10 +141,11 @@ public class TalkFragment extends Fragment implements View.OnClickListener,EMMes
     }
 //展示所有学生
     public void showALlFrinend(List<telPeople> list){
+
+        Log.i("zjc",list.size()+"dsafsafsaffffffffffffffffff");
         for(telPeople l:list) {
             ridd+=l+",";
             telman = new telPeople(l.getId(),l.getName());
-
             telPeopleList.add(telman);
         }
         adapter.notifyDataSetChanged();
@@ -170,7 +172,6 @@ public class TalkFragment extends Fragment implements View.OnClickListener,EMMes
             }
         }.start();
     }
-
     void initview(View view){
         EMClient.getInstance().chatManager().addMessageListener(mMessageListener);
         mMessageListener = this;
@@ -179,10 +180,26 @@ public class TalkFragment extends Fragment implements View.OnClickListener,EMMes
         recyclerView=view.findViewById(R.id.telphone);
         final LinearLayoutManager linearLayoutManager=new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
-
+        swipeRefreshLayout=view.findViewById(R.id.flash);
         adapter=new Adapter(getActivity(),telPeopleList);
         recyclerView.setAdapter(adapter);
-
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                swipeRefreshLayout.setRefreshing(true);//开启刷新
+                //重新获取数据
+                //获取完成swipeRefreshLayout.setRefreshing(false);
+                (new Handler()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.i("zjccc","刷新的我被执行了");
+                        swipeRefreshLayout.setRefreshing(false);//停止刷新
+                        Toast.makeText(getContext(),"success",Toast.LENGTH_SHORT).show();
+                        news_loadMore();//写入你要加载的数据的方法
+                    }
+                },2000);
+            }
+        });
         adapter.setOnLongClick(new Adapter.OnLongClick() {
             @Override
             public void onItemLongClick(View view, int position) {
@@ -210,7 +227,32 @@ public class TalkFragment extends Fragment implements View.OnClickListener,EMMes
             }
         });
     }
+   void  news_loadMore(){
 
+       telPeopleList=new ArrayList<>();
+           new Thread() {
+               @Override
+               public void run() {
+                   super.run();
+                   try {
+                       //拿到好友列表
+                       List<String> list = EMClient.getInstance().contactManager().getAllContactsFromServer();
+
+                       ridd="";
+                       for(String l:list) {
+                           ridd+=l+",";
+                       }
+
+                       //询问网络
+                       allFriendd.findAllFriend(ridd);
+                   } catch (HyphenateException e) {
+                       e.printStackTrace();
+                   }
+               }
+           }.start();
+
+
+   }
     @Override public void onResume() {
         super.onResume();
         // 添加消息监听
