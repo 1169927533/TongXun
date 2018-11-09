@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/rightLayout"
+    android:padding="10dip"
+    >
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="30dip"
+        android:layout_alignParentRight="true"
+        >
+        <com.facebook.drawee.view.DraweeView
+            android:layout_width="100dip"
+            android:layout_height="100dip"
+            android:id="@+id/rightImage"
+            android:maxWidth="220dp"
+            android:visibility="gone"
+            />
+       <RelativeLayout
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:orientation="horizontal"
+           android:layout_gravity="center"
+           android:gravity="center"
+           >
+           <TextView
+               android:id="@+id/fasongmessage"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:gravity="center"
+               android:layout_gravity="right"
+               android:background="@drawable/ease_chatto_bg_normal"
+               android:maxWidth="220dp"
+               android:text="发送消息"
+               android:textSize="16dp" />
+           <ImageView
+               android:layout_toRightOf="@+id/fasongmessage"
+               android:id="@+id/saq"
+               android:layout_width="50dp"
+               android:layout_height="50dp"
+               android:background="@drawable/ease_default_avatar"
+               />
+       </RelativeLayout>
+
+    </LinearLayout>
+</RelativeLayout>

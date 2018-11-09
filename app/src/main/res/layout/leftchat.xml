@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp"
+    android:id="@+id/leftLayout"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="30dip"
+        android:layout_alignParentLeft="true"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:gravity="center"
+            >
+            <ImageView
+                android:id="@+id/saq"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/ease_default_avatar"
+                />
+            <TextView
+                android:layout_toRightOf="@+id/saq"
+                android:id="@+id/shoudaoMessage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center|center_vertical"
+                android:maxWidth="220dp"
+                android:text="发送消息"
+                android:padding="16dp"
+                android:textSize="16dp"
+                android:background="@drawable/ease_chatfrom_bg_normal"
+                />
+            <com.facebook.drawee.view.DraweeView
+                android:layout_toRightOf="@+id/shoudaoMessage"
+            android:layout_width="100dip"
+            android:layout_height="100dip"
+            android:id="@+id/leftimage"
+            android:maxWidth="220dp"
+              android:visibility="gone"
+            />
+        </RelativeLayout>
+
+    </LinearLayout>
+</RelativeLayout>

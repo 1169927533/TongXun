@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.a11699.graduatemanager.gaoxiao">
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textSize="20dp"
+    android:text="想发表情，不存在的，这一辈子都不存在的，除非你把你的表情发来，我来给你定制一个，哈哈哈哈！
+
+
+
+
+    还有一点没告诉你，你已被我监视，就问你怕不怕，哈哈。（怎么可能，我有这么强就好了，ε=(´ο｀*)))唉）~~
+
+
+    本来想在这放一张超级恐怖的图片的，然后想想，可能会把自己吓到，还是算了。
+
+    我这小彩蛋好不好玩，哈哈，快去给智强发表的用户体验吧，O(∩_∩)O哈哈~
+
+"
+    />
+</LinearLayout>

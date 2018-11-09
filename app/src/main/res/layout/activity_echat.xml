@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:transitionName="one"
+    tools:context=".activity.EChatActivity">
+   <LinearLayout
+       android:layout_width="match_parent"
+       android:layout_height="40dp"
+       android:orientation="horizontal"
+       android:background="#63B8FF"
+       android:layout_gravity="center"
+        >
+       <ImageView
+           android:layout_gravity="center"
+           android:layout_width="30dp"
+           android:layout_height="30dp"
+           android:background="@drawable/back"
+           android:id="@+id/chat_back"
+           />
+       <TextView
+           android:layout_width="0dp"
+           android:layout_weight="1"
+           android:layout_height="wrap_content"
+           android:text="对象"
+           android:layout_gravity="center"
+           android:gravity="center"
+           android:textSize="20dp"
+           android:id="@+id/duixiang"
+
+           />
+       <ImageView
+           android:id="@+id/chat_history"
+           android:layout_marginRight="5dp"
+           android:layout_weight="0"
+           android:layout_gravity="center"
+           android:layout_width="30dp"
+           android:layout_height="30dp"
+           android:background="@drawable/history"
+           />
+   </LinearLayout>
+    <!--展示消息内容-->
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/ec_text_content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:maxLines="15"
+        android:scrollbars="vertical"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+        <!--输入框-->
+        <LinearLayout
+            android:id="@+id/ec_layout_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+            <ImageView
+                android:layout_gravity="center"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="10dp"
+                android:background="@mipmap/yuyingg"
+                android:id="@+id/chat_yuying"/>
+            <EditText
+                android:id="@+id/ec_edit_message_input"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:layout_toLeftOf="@id/ec_btn_send"/>
+
+            <Button
+                android:id="@+id/ec_btn_send"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:text="Send"/>
+        </LinearLayout>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_gravity="center"
+    android:gravity="center"
+    >
+<ImageView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/talk"
+    android:id="@+id/fasongtalk"
+    />
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/biaoqingtupain"
+        android:layout_marginLeft="40dp"
+        android:id="@+id/fasongtupian"
+        />
+<ImageView
+    android:layout_marginLeft="50dp"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:src="@drawable/xiaonian"
+    android:id="@+id/biaoqing"
+    />
+</LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>
