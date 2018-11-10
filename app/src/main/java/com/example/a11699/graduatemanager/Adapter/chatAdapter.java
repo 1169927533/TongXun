@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.example.a11699.graduatemanager.ECApplication;
 import com.example.a11699.graduatemanager.R;
+import com.example.a11699.graduatemanager.circle.CirvleImageView;
 import com.example.a11699.graduatemanager.lei.chatinformation;
 import com.example.a11699.graduatemanager.utils.PopWindow_image;
 import com.facebook.drawee.view.DraweeView;
@@ -37,16 +38,17 @@ public class chatAdapter extends RecyclerView.Adapter {
     private static final int TYPE_LEFT=0;//左边item
     private static final int TYPE_RIGHT=1;//右边item
     private Context context;
-
     List<EMMessage> emMessages;
     private FinalBitmap fb;//显示图片
     private String name;//当前聊天的人
     EMMessage message;
-    public chatAdapter(List<EMMessage> emMessages, Context context,String name) {
+    int renidl;
+    public chatAdapter(List<EMMessage> emMessages, Context context,String name,int renidl) {
         this.emMessages = emMessages;
         this.context = context;
         this.fb=FinalBitmap.create(context);
         this.name=name;
+        this.renidl=renidl;
     }
     @NonNull
     @Override
@@ -68,8 +70,8 @@ public class chatAdapter extends RecyclerView.Adapter {
        final EMMessage message=emMessages.get(i);
         Log.i("zjc","消息总数"+emMessages.size());
         if(viewHolder instanceof leftChatViewholder){
+            ((leftChatViewholder)viewHolder).lef_saq.setImageBitmap(ECApplication.list.get(renidl));
              if(message.getType()==EMMessage.Type.TXT){
-              //   ((leftChatViewholder)viewHolder).shoudaoMessage.setVisibility(View.VISIBLE);
                  String mess=((EMTextMessageBody)message.getBody()).getMessage();
                  Log.i("zjc","Adapter答应数据“："+mess);
                  ((leftChatViewholder)viewHolder).shoudaoMessage.setText(mess);
@@ -99,6 +101,7 @@ public class chatAdapter extends RecyclerView.Adapter {
              }
 
          }else{
+            ((rightChatViewHolder)viewHolder).right_saq.setImageBitmap(ECApplication.getPersonImage());
             if(message.getType()==EMMessage.Type.TXT) {
               //  ((rightChatViewHolder) viewHolder).fasongmessage.setVisibility(View.VISIBLE);
                 String mess = ((EMTextMessageBody) message.getBody()).getMessage();
@@ -150,19 +153,24 @@ private void imageClick(ImageView imageView,final String imageUrl){
     public class leftChatViewholder extends RecyclerView.ViewHolder{
           TextView shoudaoMessage;
           DraweeView leftimage;
+          CirvleImageView lef_saq;
         public leftChatViewholder(@NonNull View itemView) {
             super(itemView);
             shoudaoMessage=itemView.findViewById(R.id.shoudaoMessage);
             leftimage=itemView.findViewById(R.id.leftimage);
+            lef_saq=itemView.findViewById(R.id.lef_saq);
         }
     }
     public class rightChatViewHolder extends RecyclerView.ViewHolder{
           TextView fasongmessage;
           DraweeView rightImage;
+          CirvleImageView right_saq;
         public rightChatViewHolder(@NonNull View itemView) {
             super(itemView);
             fasongmessage=itemView.findViewById(R.id.fasongmessage);
             rightImage=itemView.findViewById(R.id.rightImage);
+            right_saq=itemView.findViewById(R.id.right_saq);
+
         }
     }
 

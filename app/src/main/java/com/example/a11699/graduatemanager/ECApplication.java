@@ -4,12 +4,14 @@ import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.hyphenate.chat.EMClient;
 import com.hyphenate.chat.EMOptions;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -28,11 +30,16 @@ public class ECApplication extends Application {
     private SharedPreferences pref;//喜好设置
     private SharedPreferences.Editor editor;
 
-
+//个人的照片
+    public static Bitmap personImage;
+    //对方照片
+    public static Bitmap duifangImage;
+    //
+    public  static List<Bitmap> list=new ArrayList<>();
     @Override public void onCreate() {
         super.onCreate();
         mContext = this;
-
+        Log.i("friend","ECAMplcationd的Oncreatd是在什么时候被执行");
         // 初始化环信SDK
         initEasemob();
         JPushInterface.setDebugMode(true);
@@ -42,6 +49,21 @@ public class ECApplication extends Application {
         editor=pref.edit();
 
 
+    }
+    public static Bitmap getDuifangImage() {
+        return duifangImage;
+    }
+
+    public static void setDuifangImage(Bitmap duifangImage) {
+        ECApplication.duifangImage = duifangImage;
+    }
+
+    public static Bitmap getPersonImage() {
+        return personImage;
+    }
+
+    public static void setPersonImage(Bitmap personImage) {
+        ECApplication.personImage = personImage;
     }
 
     public static Context getmContext() {

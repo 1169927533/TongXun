@@ -82,6 +82,7 @@ public class EChatActivity extends BaseActivity implements EMMessageListener {
     private EMMessageListener mMessageListener;
     // 当前聊天的 ID
     private String mChatId;
+    private int diandeid;//选中行的位置
     //账户人
     private String mzhuren = EMClient.getInstance().getCurrentUser();
     // 当前会话对象
@@ -94,6 +95,7 @@ public class EChatActivity extends BaseActivity implements EMMessageListener {
     private VoiceRecorder voiceRecorder;// 环信封装的录音功能类
     private MediaPlayer mPlayer = null;// 播放语音的对象（播放器）
     private AnimationDrawable voiceAnimation = null;
+    String beizhu;//备注
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,12 +105,20 @@ public class EChatActivity extends BaseActivity implements EMMessageListener {
         devorView.getViewTreeObserver().addOnGlobalLayoutListener(getGlobalLayoutListener(devorView, contentView));
         // 获取当前会话的username(如果是群聊就是群id)
         mChatId = getIntent().getStringExtra("ec_chat_id");
+        Bundle bundle=getIntent().getExtras();
+        diandeid=bundle.getInt("weizhi");
+        beizhu=getIntent().getStringExtra("beizhu");
+        Log.i("friend","我来看看我拿到的weizhi："+diandeid);
         mMessageListener = this;
         initConversation();
         initView();
         initSpeech();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
     private ViewTreeObserver.OnGlobalLayoutListener getGlobalLayoutListener(final View decorView, final View contentView) {
         return new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
@@ -142,7 +152,7 @@ public class EChatActivity extends BaseActivity implements EMMessageListener {
         fasongtupian = findViewById(R.id.fasongtupian);//发送图片信息
         chat_yuying = findViewById(R.id.chat_yuying);//发送语音
         duixiang = findViewById(R.id.duixiang);//发送文字信息
-        duixiang.setText(mChatId);//聊天界面的头部信息
+        duixiang.setText(beizhu);//聊天界面的头部信息
         mInputEdit = (EditText) findViewById(R.id.ec_edit_message_input);
         mSendBtn = (Button) findViewById(R.id.ec_btn_send);
         ec_layout_input = (RecyclerView) findViewById(R.id.ec_text_content);
@@ -155,23 +165,9 @@ public class EChatActivity extends BaseActivity implements EMMessageListener {
         listt = conversation.getAllMessages();
 
 
-        adapter = new chatAdapter(listt, this, mChatId);
+        adapter = new chatAdapter(listt, this, mChatId,diandeid);
         ec_layout_input.scrollToPosition(adapter.getItemCount() - 1);
         ec_layout_input.setAdapter(adapter);
-      /*  ec_layout_input.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                if(bottom<oldBottom){
-                    ec_layout_input.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            ec_layout_input.scrollToPosition(adapter.getItemCount()-1);
-                        }
-                    },100);
-                }
-            }
-        });
-        */
         fasongtupian.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

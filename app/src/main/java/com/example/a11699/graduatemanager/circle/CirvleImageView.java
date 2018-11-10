@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -14,13 +15,30 @@ import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Message;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.ImageView;
 
+
+import com.example.a11699.graduatemanager.ECApplication;
 import com.example.a11699.graduatemanager.R;
+
+import    android.os.Handler;
+import android.widget.Toast;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 @SuppressLint("AppCompatCustomView")
 public class CirvleImageView extends ImageView {
+    private static final int GET_DATA_SUCCESSS=1;
+    private static  final int NETWORK_ERROR=2;
+    private static final int SERVER_ERROR=3;
+
     private static final ScaleType SCALE_TYPE = ScaleType.CENTER_CROP;
 
     private static final Bitmap.Config BITMAP_CONFIG = Bitmap.Config.ARGB_8888;
@@ -49,6 +67,29 @@ public class CirvleImageView extends ImageView {
 
     private boolean mReady;
     private boolean mSetupPending;
+
+    //在handler里面更新图片
+    @SuppressLint("HandlerLeak")
+      Handler handler=new android.os.Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what){
+                case GET_DATA_SUCCESSS:
+                    //显示网络图片
+                    Bitmap bitmap = (Bitmap) msg.obj;
+                    setImageBitmap(bitmap);
+                    break;
+                case NETWORK_ERROR:
+                    Toast.makeText(getContext(), "网络连接错误", Toast.LENGTH_SHORT).show();
+                    break;
+                case SERVER_ERROR:
+                    Toast.makeText(getContext(),"服务器发生错误",Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+    };
+
 
     public CirvleImageView(Context context) {
         super(context);
@@ -232,6 +273,51 @@ public class CirvleImageView extends ImageView {
         mShaderMatrix.postTranslate((int) (dx + 0.5f) + mBorderWidth, (int) (dy + 0.5f) + mBorderWidth);
 
         mBitmapShader.setLocalMatrix(mShaderMatrix);
+    }
+    //设置网络图片
+    public  void setImageURL(final String url){
+        //开启一个线程
+        new Thread(){
+            @Override
+            public void run() {
+                //super.run();
+                try {
+                    //将传过来的路径转换成URL
+                    URL url1=new URL(url);
+                    ///获取网络连接
+                    try {
+                        HttpURLConnection connection=(HttpURLConnection)url1.openConnection();
+                        //使用get方法访问网络
+                        connection.setRequestMethod("GET");
+                        //超时未10秒
+                        connection.setConnectTimeout(10000);
+                        //获取返回码
+                        int code=connection.getResponseCode();
+                        if(code==200){
+                            InputStream inputStream=connection.getInputStream();
+                            Bitmap bitmap= BitmapFactory.decodeStream(inputStream);
+                            ECApplication.list.add(bitmap);
+                            //使用工厂化吧网络输入流生产bitmap
+                            Message message=Message.obtain();
+                            message.obj=bitmap;
+                            message.what=GET_DATA_SUCCESSS;
+                            handler.sendMessage(message);
+                            inputStream.close();
+                        }else{
+                            //服务器错误
+                            ECApplication.list.add(null);
+                            handler.sendEmptyMessage(SERVER_ERROR);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        //网络连接错误
+                        handler.sendEmptyMessage(NETWORK_ERROR);
+                    }
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
     }
 
 }

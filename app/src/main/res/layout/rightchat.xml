@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:hehe="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/rightLayout"
@@ -36,12 +37,13 @@
                android:maxWidth="220dp"
                android:text="发送消息"
                android:textSize="16dp" />
-           <ImageView
+           <com.example.a11699.graduatemanager.circle.CirvleImageView
                android:layout_toRightOf="@+id/fasongmessage"
-               android:id="@+id/saq"
+               android:id="@+id/right_saq"
                android:layout_width="50dp"
                android:layout_height="50dp"
-               android:background="@drawable/ease_default_avatar"
+               hehe:border_color="#FFFFFF"
+
                />
        </RelativeLayout>
 

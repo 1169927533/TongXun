@@ -62,7 +62,7 @@ Handler handler=new Handler() {
                     list=new ArrayList<>();
                     for(int i=0;i<jsonArray.length();i++){
                         telPeople finfor = gson.fromJson(String.valueOf(jsonArray.get(i)),telPeople.class);
-                        Log.i("zjc",finfor.getId()+" "+finfor.getName());
+
                         list.add(finfor);
                     }
                     handler.sendEmptyMessage(20);

@@ -4,6 +4,7 @@ package com.example.a11699.graduatemanager.Fragment;
 import android.app.ActivityOptions;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -31,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.a11699.graduatemanager.Adapter.Adapter;
+import com.example.a11699.graduatemanager.ECApplication;
 import com.example.a11699.graduatemanager.R;
 import com.example.a11699.graduatemanager.activity.EChatActivity;
 import com.example.a11699.graduatemanager.activity.MainActivity;
@@ -84,26 +86,23 @@ public class TalkFragment extends Fragment implements View.OnClickListener,EMMes
             else if(msg.what==0x13){
                 //用来显示好友列表
                 list= (List<String>) msg.obj;
-              /*  for(String ll:list){
-                    telPeople telPeople=new telPeople(ll, ll);
-                    telPeopleList.add(telPeople);
-                }
-                adapter.notifyDataSetChanged();
-                */
+                Log.i("friend","你的好友总数 ："+list.size());
                 for(String l:list) {
                     ridd+=l+",";
                 }
-                Log.i("zjc",ridd);
+                Log.i("zjc",ridd);//从环信拿得所有好友的id
                 //询问网络
-                allFriendd.findAllFriend(ridd);
-               //
+                if(list.size()!=0){
+                    allFriendd.findAllFriend(ridd);
+                }
             }
             else if(msg.what==0x14){
                 //接受方同意后
-                Log.i("zjc","同意后，我的数值变化没"+telPeopleList.size());
                 telman=new telPeople(startInformation.userNumber,startInformation.userNumber);
-                telPeopleList.add(telman);
-                adapter.notifyItemRangeInserted(telPeopleList.size(),1);
+                ridd+=telman.getName();
+                Log.i("friend","同意后对方的id"+telman.getName());
+                allFriendd.findAllFriend(ridd);
+
             }
             else if(msg.what==0x15){
                 //发送方被同意后更新数据
@@ -139,17 +138,17 @@ public class TalkFragment extends Fragment implements View.OnClickListener,EMMes
         initview(rootview);
         return rootview;
     }
-//展示所有学生
+         //展示所有学生
     public void showALlFrinend(List<telPeople> list){
-
-        Log.i("zjc",list.size()+"dsafsafsaffffffffffffffffff");
         for(telPeople l:list) {
-            ridd+=l+",";
-            telman = new telPeople(l.getId(),l.getName());
+            telman = new telPeople(l.getSid(),l.getName(),l.getPicture_url());
+           //这个是第一次进来的时候的好友列表
             telPeopleList.add(telman);
+            Log.i("friend","好友id"+l.getSid()+"好友名字："+l.getName()+"              ");
         }
+        Log.i("friend","所有的好友id："+ridd);
+        ridd="";
         adapter.notifyDataSetChanged();
-       // adapter.notifyItemRangeInserted(telPeopleList.size(),1);
     }
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -203,6 +202,7 @@ public class TalkFragment extends Fragment implements View.OnClickListener,EMMes
         adapter.setOnLongClick(new Adapter.OnLongClick() {
             @Override
             public void onItemLongClick(View view, int position) {
+
                 delete(position);
             }
         });
@@ -214,7 +214,8 @@ public class TalkFragment extends Fragment implements View.OnClickListener,EMMes
                 View vieww = manager.getChildAt(position);
                 Adapter.MyviewHolder holder = (Adapter.MyviewHolder) recyclerView.getChildViewHolder(vieww);
                 holder.imageView.setImageResource(R.drawable.message3);
-                chat(telPeopleList.get(position).getId(),EMClient.getInstance().getCurrentUser());
+                //第一个参数是对方的id 后一个是自己的id
+                chat(telPeopleList.get(position).getName(),EMClient.getInstance().getCurrentUser(), position,  telPeopleList.get(position).getSid());
             }
         });
         adapter.notifyItemRangeInserted(telPeopleList.size(),1);
@@ -468,8 +469,10 @@ public class TalkFragment extends Fragment implements View.OnClickListener,EMMes
         builder.setTitle("是否删除好友").setPositiveButton("确定", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
                 try {
+                    ECApplication.list.remove(position);
+                    Log.i("zjc","recyclevewi点击了"+position+"");
+                    Log.i("zjc","你是否删除好友："+telPeopleList.get(position).getName());
                      EMClient.getInstance().contactManager().deleteContact(telPeopleList.get(position).getName());
                 } catch (HyphenateException e) {
                     e.printStackTrace();
@@ -486,7 +489,12 @@ public class TalkFragment extends Fragment implements View.OnClickListener,EMMes
     }
     //开始聊天 第一个参数发起聊天这的id 第二个参数 当前用户的id
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    void chat(String taNName,String meNumber ){
+    void chat(String taNName, String meNumber,int position,String nameeeee){
+        Log.i("friend","ECMPlication里的所有人的总数："+ECApplication.list.size()+"");
+     for(int i=0;i<ECApplication.list.size();i++){
+         Log.i("friend",ECApplication.list.get(i)+"        ");
+     }
+        Log.i("friend","聊天的人的id："+taNName+"  自己的id"+meNumber+"  刚才点的位置："+position);
         if(!TextUtils.isEmpty(taNName)){
             if(taNName.equals(meNumber)){
                 Toast.makeText(getActivity(), "不能和自己聊天", Toast.LENGTH_SHORT).show();
@@ -498,16 +506,15 @@ public class TalkFragment extends Fragment implements View.OnClickListener,EMMes
                 getActivity().getWindow().setExitTransition(null);
                 Intent intent=new Intent(getActivity(), EChatActivity.class);
                 intent.putExtra("ec_chat_id",taNName);
-
+                intent.putExtra("beizhu",nameeeee);
+                Log.i("friend","我来看看这个taNName是什么"+taNName+"");
+                Bundle bundle=new Bundle();
+                bundle.putInt("weizhi",position);
+                Log.i("friend","我来看看这个position是什么"+position+"");
+                intent.putExtras(bundle);
                 ActivityOptions options =ActivityOptions.makeSceneTransitionAnimation(getActivity(),recyclerView,"one");
                 startActivity(intent, options.toBundle());
-                //跳到聊天的地方
-              //  Intent intent=new Intent(getActivity(), EChatActivity.class);
-                //intent.putExtra("ec_chat_id",taNName);
-                //startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
             }
-
-
         } else {
             Toast.makeText(getActivity(), "Username 不能为空", Toast.LENGTH_LONG).show();
         }

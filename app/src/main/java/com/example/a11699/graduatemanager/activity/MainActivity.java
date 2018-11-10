@@ -12,6 +12,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
@@ -61,6 +62,7 @@ import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -113,6 +115,7 @@ public class MainActivity extends BaseActivity {
                 byte []Pi=(byte[])msg.obj;
                 Bitmap bitmap= BitmapFactory.decodeByteArray(Pi,0,Pi.length);
                 person=view.findViewById(R.id.ren_picturcc);
+                ECApplication.setPersonImage(bitmap);
                 person .setImageBitmap(bitmap);
             }
         }
@@ -297,10 +300,8 @@ public class MainActivity extends BaseActivity {
     public static void exit(){
         MyApplication.setS_id("");
         MyApplication.setS_name("");
-
         editor.clear();
         editor.apply();
-
         Intent intent=new Intent(ECApplication.getmContext(), LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         ECApplication.getmContext().startActivity(intent);
@@ -348,8 +349,6 @@ public class MainActivity extends BaseActivity {
         objectAnimator.setDuration(duration);
         objectAnimator.start();
     }
-
-
     public static final String MESSAGE_RECEIVED_ACTION = "com.example.a11699.graduatemanager.MESSAGE_RECEIVED_ACTION";
     public static final String KEY_TITLE = "title";
     public static final String KEY_MESSAGE = "message";
@@ -414,7 +413,7 @@ public class MainActivity extends BaseActivity {
         startActivityForResult(intent1, 1);
 
     }
-
+    Uri mUritempFile;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         switch (requestCode){
@@ -425,9 +424,35 @@ public class MainActivity extends BaseActivity {
                 }
                 break;
             case 3:
+
+                if (data != null) {
+                    //将Uri图片转换为Bitmap
+                    try {
+                        Bitmap bitmap = BitmapFactory.decodeStream( getContentResolver().openInputStream(mUritempFile));
+                        //TODO，将裁剪的bitmap显示在imageview控件上
+                        person.setImageBitmap(bitmap);// 用ImageButton显示出来
+                       // setImageToHeadView(bitmap);
+                        if (bitmap != null) {
+                            Uri uri = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, null, null));
+                            String realPathFromUri = RealPathFromUriUtils.getRealPathFromUri(this, uri);
+                            Log.i("zjc", realPathFromUri);
+                            String baseEncode = getImageStr(realPathFromUri);
+                            String dd[] = ren_workname.getTitle().toString().split(":| ");
+                            String place[] = ren_workplace.getTitle().toString().split(":| ");
+                            String d[] = ren_workzhiwu.getTitle().toString().split(":| ");
+                             iinitData(EMClient.getInstance().getCurrentUser(),place[4],dd[4],d[4],baseEncode);
+                             }
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+              /*
+                      //系统自带的方法
                 if (data != null) {
                     Bundle extras = data.getExtras();
                     head = extras.getParcelable("data");
+                    ECApplication.setPersonImage(head);
                     person.setImageBitmap(head);// 用ImageButton显示出来
                     if (head != null) {
                         Uri uri = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), head, null,null));
@@ -439,10 +464,10 @@ public class MainActivity extends BaseActivity {
                         String d[]=ren_workzhiwu.getTitle().toString().split(":| ");
                          /**
                          * 上传服务器代码
-                         */
                          iinitData(EMClient.getInstance().getCurrentUser(),place[4],dd[4],d[4],baseEncode);
                     }
                 }
+                */
                 break;
         }
     }
@@ -456,7 +481,9 @@ public class MainActivity extends BaseActivity {
     }
     //调用系统裁剪图片
     void crophoto(Uri uri){
-        Intent intent = new Intent("com.android.camera.action.CROP");
+       /*
+           //系统自带的方法
+      Intent intent = new Intent("com.android.camera.action.CROP");
         intent.setDataAndType(uri, "image/*");
         intent.putExtra("crop", "true");
         // aspectX aspectY 是宽高的比例
@@ -467,6 +494,29 @@ public class MainActivity extends BaseActivity {
         intent.putExtra("outputY", 250);
         intent.putExtra("return-data", true);
         startActivityForResult(intent, 3);
+        */
+        Intent intent = new Intent("com.android.camera.action.CROP");
+        intent.setDataAndType(uri, "image/*");
+
+        // 设置裁剪
+        intent.putExtra("crop", "true");
+
+        // aspectX , aspectY :宽高的比例
+        intent.putExtra("aspectX", 1);
+        intent.putExtra("aspectY", 1);
+
+        // outputX , outputY : 裁剪图片宽高
+        intent.putExtra("outputX", 250);
+        intent.putExtra("outputY", 250);
+//        intent.putExtra("return-data", true);      //原本的裁剪方式
+
+        //uritempFile为Uri类变量，实例化uritempFile，转化为uri方式解决问题
+         mUritempFile = Uri.parse("file://" + "/" + Environment.getExternalStorageDirectory().getPath() + "/" + "small.jpg");
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, mUritempFile);
+        intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
+
+        startActivityForResult(intent, 3);
+
     }
     //post请求网络数据
     private void iinitData(String xuehaoo,String workplacee,String gongsii,String zhuwuu,String baseEncode){

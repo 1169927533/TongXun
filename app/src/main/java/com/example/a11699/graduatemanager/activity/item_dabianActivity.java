@@ -33,7 +33,7 @@ import java.util.List;
 public class item_dabianActivity extends AppCompatActivity implements SavaEdittevtListener {
 private TextView da_wquxiaoa,da_wenti;
 private Button dabian_fa;
-String neirong;//所有回答的内容
+String neirong="";//所有回答的内容
 dabianDao dabianDaeo=new dabianDaoImp(this);
 private List<String> listt=new ArrayList<>();//保存题目数据
 String name,iddd;//答辩标题
@@ -71,8 +71,10 @@ String name,iddd;//答辩标题
         dabian_fa.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dabianDaeo.putDabain(EMClient.getInstance().getCurrentUser(),neirong,iddd);
-                neirong="";
+                zuizhong=zuizhong+neirong;
+                Log.i("zjc",zuizhong);
+                dabianDaeo.putDabain(EMClient.getInstance().getCurrentUser(),zuizhong,iddd);
+                neirong="";zuizhong="";
             }
         });
         adapter= new itdabianAdapter(this,listt);
@@ -84,13 +86,17 @@ String name,iddd;//答辩标题
     public void show(){
         Toast.makeText(item_dabianActivity.this,"发表成功",Toast.LENGTH_SHORT).show();
     }
-
+      int sp=0;
+    String zuizhong="";
     @Override
     public void SaveEdit(int position, String string) {
-        neirong+=string+"#";
-        Log.i("zjc",neirong);
+        if(sp==position){
+            neirong=string;
+        }else{
+            zuizhong+=neirong+"#";
+            sp=position;
+        }
     }
-
     public static class itdabianAdapter extends RecyclerView.Adapter{
         private Context context;
         private List<String> list;
@@ -117,13 +123,17 @@ String name,iddd;//答辩标题
             }
 
             @Override
-            public void afterTextChanged(Editable s) {
-                //用户输入完毕后，处理输入数据，回调给主界面处理
+            public void afterTextChanged(final Editable s) {
+                             SavaEdittevtListener listener= (SavaEdittevtListener) context;
+                             if(s!=null){
+                                 listener.SaveEdit(Integer.parseInt(mHolder.item_question.getTag().toString()),s.toString());
+                             }
+              /*  //用户输入完毕后，处理输入数据，回调给主界面处理
                 SavaEdittevtListener listener= (SavaEdittevtListener) context;
                 if(s!=null){
                     listener.SaveEdit(Integer.parseInt(mHolder.item_question.getTag().toString()),s.toString());
                 }
-
+*/
             }
         }
         @NonNull
